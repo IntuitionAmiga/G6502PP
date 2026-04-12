@@ -497,6 +497,92 @@ func (cpu *MOS6502) Run() *MOS6502 {
             dispatch()
         }
 
+        // Stack
+        handle(PHA) {
+            push(iAccumulator)
+            size(PHA)
+            dispatch()
+        }
+
+        handle(PHP) {
+            // PHP... SixPhphive02 Rides Again
+            iData = iStatus | F_BREAK | F_UNUSED 
+            push(iData)
+            size(PHP)
+            dispatch()
+        }
+
+        handle(PLA) {
+            pull(iAccumulator)
+            updateNZ(iAccumulator)
+            size(PLA)
+            dispatch()
+        }
+        
+        handle(PLP) {
+            pull(iData)
+            iData &= ^(F_BREAK | F_UNUSED)
+            iStatus = (iStatus & (F_BREAK | F_UNUSED)) | iData
+            size(PLP)
+            dispatch()
+        }
+
+        // Decrement
+        handle(DEX) {
+            iXIndex--
+            updateNZ(iXIndex)
+            size(DEX)
+            dispatch()
+        }
+
+        handle(DEY) {
+            iYIndex--
+            updateNZ(iYIndex)
+            size(DEY)
+            dispatch()
+        }
+
+        handle(DEC_ZP) {
+            // load() sets iAddress
+            load(zp(), iData)
+            iData--
+            updateNZ(iData)
+            writeByte(iAddress, iData)
+            size(DEC_ZP)
+            dispatch()
+        }
+
+        handle(DEC_ZPX) {
+            // load() sets iAddress
+            load(zpx(), iData)
+            iData--
+            updateNZ(iData)
+            writeByte(iAddress, iData)
+            size(DEC_ZPX)
+            dispatch()
+        }
+
+        handle(DEC_AB) {
+            // load() sets iAddress
+            load(ab(), iData)
+            iData--
+            updateNZ(iData)
+            writeByte(iAddress, iData)
+            size(DEC_AB)
+            dispatch()
+        }
+
+        handle(DEC_ABX) {
+            // load() sets iAddress
+            load(abx(), iData)
+            iData--
+            updateNZ(iData)
+            writeByte(iAddress, iData)
+            size(DEC_ABX)
+            dispatch()
+        }
+
+
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
 	    case 0x23: fallthrough

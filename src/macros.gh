@@ -9,7 +9,8 @@
 #   define writeByte(addr, val) *(*Byte)(unsafe.Pointer(uintptr(pOutside) + uintptr(addr))) = (Byte)(val)
 #   define readWord(addr) (Word(readByte(addr)) | (Word(readByte(addr + 1)) << 8))
 #   define readWordZP(addr) (Word(readByte(addr)) | (Word(readByte((addr + 1) & 0xFF)) << 8))
-
+#   define pull(target) iStackPointer++; target = readByte(STACK_BASE + Address(iStackPointer))
+#   define push(source) writeByte(STACK_BASE + Address(iStackPointer), source); iStackPointer--
 #   define branch() iProgramCounter = Address(int16(iProgramCounter) + int16(*(*int8)(unsafe.Pointer(uintptr(pOutside) + uintptr(iProgramCounter + 1))))) + SIZE_BRANCH
 
 // Addressing. Better hope common subexpression elimination works
