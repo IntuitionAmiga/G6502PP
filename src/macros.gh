@@ -63,6 +63,7 @@
 #   define dispatch()   continue
 #   define size(NAME) iProgramCounter += SIZE_##NAME
 #   define illegal() default: break Interpreter
+#   define hammerzeit() break Interpreter
 
 #   define load(mode, target)  { mode; target = readByte(iAddress) }
 #   define store(mode, source) { mode; writeByte(iAddress, source) }

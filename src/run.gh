@@ -833,6 +833,32 @@ func (cpu *MOS6502) Run() *MOS6502 {
             dispatch()
         }        
         
+        // Unconditional
+
+        handle(JMP_AB) {
+            iAddress = readWord(iProgramCounter + 1)
+            if iAddress == iProgramCounter {
+                // HALT
+                hammerzeit()
+            }
+            iProgramCounter = iAddress
+            dispatch()
+        }
+
+        handle(JMP_IN) {
+            // Emulate the 6502 indirect jump bug with respect to page boundaries.
+            iAddress = readWord(iProgramCounter + 1)
+            if 0x00FF == (iAddress & 0x00FF) {
+                iProgramCounter  = Address(readByte(iAddress))
+                iProgramCounter |= (Address(readByte(iAddress & 0xFF00)) << 8)
+            } else {
+                iProgramCounter = readWord(iAddress);
+            }
+            dispatch();
+        }
+
+
+        
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
 	    case 0x23: fallthrough
