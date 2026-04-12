@@ -10,7 +10,7 @@ func main() {
     const (
         BASE  = 0x200
         BLOCK = 32768
-        LOOPS = 100000
+        LOOPS = 1
     )
 
     mem := new(AddressSpace)
@@ -21,7 +21,23 @@ func main() {
     for i:= 0; i < BLOCK; i++ {
         mem[BASE + i] = NOP
     }
-    mem[BASE + BLOCK] = 0xFF // bad
+    mem[BASE + BLOCK] = BEQ
+    mem[BASE + BLOCK + 1] = 0x4
+    mem[BASE + BLOCK + 2] = 0x0F
+    mem[BASE + BLOCK + 3] = 0x1F
+    mem[BASE + BLOCK + 4] = 0x2F
+    mem[BASE + BLOCK + 5] = 0x3F
+    mem[BASE + BLOCK + 6] = 0x4F
+    mem[BASE + BLOCK + 7] = 0x5F
+    mem[BASE + BLOCK + 8] = 0x6F
+    mem[BASE + BLOCK + 9] = 0x8F
+    mem[BASE + BLOCK + 10] = 0x9F
+    mem[BASE + BLOCK + 11] = 0xAF
+    mem[BASE + BLOCK + 12] = 0xBF
+    mem[BASE + BLOCK + 13] = 0xCF
+    mem[BASE + BLOCK + 14] = 0xDF
+    mem[BASE + BLOCK + 15] = 0xEF
+    mem[BASE + BLOCK + 16] = 0xBF
 
     cpu := &MOS6502{}
     cpu.Init(mem).ShowStatus();

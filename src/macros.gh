@@ -10,9 +10,11 @@
 #   define readWord(addr) (Word(readByte(addr)) | (Word(readByte(addr + 1)) << 8))
 #   define readWordZP(addr) (Word(readByte(addr)) | (Word(readByte((addr + 1) & 0xFF)) << 8))
 
+#   define branch() iProgramCounter = Address(int16(iProgramCounter) + int16(*(*int8)(unsafe.Pointer(uintptr(pOutside) + uintptr(iProgramCounter + 1))))) + SIZE_BRANCH
+
 // Addressing. Better hope common subexpression elimination works
 
-#   define im() { iAddress = iProgramCounter +1 }
+#   define im() { iAddress = iProgramCounter + 1 }
 
 /**
  * $NN
@@ -63,6 +65,7 @@
 
 #   define load(mode, target)  { mode; target = readByte(iAddress) }
 #   define store(mode, source) { mode; writeByte(iAddress, source) }
+
 
 // ALU
 

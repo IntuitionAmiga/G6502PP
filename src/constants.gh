@@ -322,6 +322,7 @@ const (
 	SIZE_ASL_AB  = 3 // Absolute
 	SIZE_ASL_ABX = 3 // Absolute,X
 
+    SIZE_BRANCH  = 2
 	SIZE_BCC     = 2
 	SIZE_BCS     = 2
 	SIZE_BEQ     = 2
