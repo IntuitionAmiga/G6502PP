@@ -702,6 +702,72 @@ func (cpu *MOS6502) Run() *MOS6502 {
             dispatch()
         }
 
+
+        handle(ORA_IM) {
+            load(im(), iData)
+            iAccumulator |= iData
+            updateNZ(iAccumulator)
+            size(ORA_IM)
+            dispatch()
+        }
+
+        handle(ORA_ZP) {
+            load(zp(), iData)
+            iAccumulator |= iData
+            updateNZ(iAccumulator)
+            size(ORA_ZP)
+            dispatch()
+        }
+
+        handle(ORA_ZPX) {
+            load(zpx(), iData)
+            iAccumulator |= iData
+            updateNZ(iAccumulator)
+            size(ORA_ZPX)
+            dispatch()
+        }
+
+        handle(ORA_AB) {
+            load(ab(), iData)
+            iAccumulator |= iData
+            updateNZ(iAccumulator)
+            size(ORA_AB)
+            dispatch()
+        }
+
+        handle(ORA_ABX) {
+            load(abx(), iData)
+            iAccumulator |= iData
+            updateNZ(iAccumulator)
+            size(ORA_ABX)
+            dispatch()
+        }
+
+        handle(ORA_ABY) {
+            load(aby(), iData)
+            iAccumulator |= iData
+            updateNZ(iAccumulator)
+            size(ORA_ABY)
+            dispatch()
+        }
+
+        handle(ORA_IX) {
+            load(ix(), iData)
+            iAccumulator |= iData
+            updateNZ(iAccumulator)
+            size(ORA_IX)
+            dispatch()
+        }
+
+        handle(ORA_IY) {
+            load(iy(), iData)
+            iAccumulator |= iData
+            updateNZ(iAccumulator)
+            size(ORA_IY)
+            dispatch()
+        }
+
+
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
 	    case 0x23: fallthrough
