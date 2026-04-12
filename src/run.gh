@@ -637,6 +637,71 @@ func (cpu *MOS6502) Run() *MOS6502 {
             dispatch()
         }
 
+        // Logic Ops...
+        handle(AND_IM) {
+            load(im(), iData)
+            iAccumulator &= iData
+            updateNZ(iAccumulator)
+            size(AND_IM)
+            dispatch()
+        }
+
+        handle(AND_ZP) {
+            load(zp(), iData)
+            iAccumulator &= iData
+            updateNZ(iAccumulator)
+            size(AND_ZP)
+            dispatch()
+        }
+
+        handle(AND_ZPX) {
+            load(zpx(), iData)
+            iAccumulator &= iData
+            updateNZ(iAccumulator)
+            size(AND_ZPX)
+            dispatch()
+        }
+
+        handle(AND_AB) {
+            load(ab(), iData)
+            iAccumulator &= iData
+            updateNZ(iAccumulator)
+            size(AND_AB)
+            dispatch()
+        }
+
+        handle(AND_ABX) {
+            load(abx(), iData)
+            iAccumulator &= iData
+            updateNZ(iAccumulator)
+            size(AND_ABX)
+            dispatch()
+        }
+
+        handle(AND_ABY) {
+            load(aby(), iData)
+            iAccumulator &= iData
+            updateNZ(iAccumulator)
+            size(AND_ABY)
+            dispatch()
+        }
+
+        handle(AND_IX) {
+            load(ix(), iData)
+            iAccumulator &= iData
+            updateNZ(iAccumulator)
+            size(AND_IX)
+            dispatch()
+        }
+
+        handle(AND_IY) {
+            load(iy(), iData)
+            iAccumulator &= iData
+            updateNZ(iAccumulator)
+            size(AND_IY)
+            dispatch()
+        }
+
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
 	    case 0x23: fallthrough
