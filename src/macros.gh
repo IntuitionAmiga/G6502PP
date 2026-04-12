@@ -72,15 +72,15 @@
         iStatus |= F_ZERO \
     } else { \
         iStatus |= (value & F_NEGATIVE) \
-    } \
+    }; \
 }
 
 #define cmpByte(iTo, iValue) { \
     iRes := iTo - iValue; \
     iStatus &= F_CLR_NZC; \
-    if iRes == 0 { iStatus |= F_ZERO } \
+    if iRes == 0 { iStatus |= F_ZERO }; \
     iStatus |= (iRes & F_NEGATIVE); \
-    if iTo >= iValue { iStatus |= F_CARRY } \
+    if iTo >= iValue { iStatus |= F_CARRY }; \
 }
 
 #endif

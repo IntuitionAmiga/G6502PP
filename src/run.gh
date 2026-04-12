@@ -16,8 +16,8 @@ func (cpu *MOS6502) Run() *MOS6502 {
     iYIndex := cpu.iYIndex
     iStackPointer := cpu.iStackPointer
 
-    var iAddress Address // The virtual Address Bus
-    //var iValue   Byte    // The virtual Data Bus
+    var iAddress Address // For address temporaries
+    var iData    Byte    // For data temporaries
     begin() {
     
         // Load Accumulator
@@ -80,162 +80,264 @@ func (cpu *MOS6502) Run() *MOS6502 {
 
         // Store Accumulator
         handle(STA_ZP) {
-            store(zp(),  iAccumulator);
-            size(STA_ZP);
-            dispatch();
+            store(zp(),  iAccumulator)
+            size(STA_ZP)
+            dispatch()
         }
 
         handle(STA_ZPX) {
-            store(zpx(), iAccumulator);
-            size(STA_ZPX);
-            dispatch();
+            store(zpx(), iAccumulator)
+            size(STA_ZPX)
+            dispatch()
         }
 
         handle(STA_AB) {
-            store(ab(),  iAccumulator);
-            size(STA_AB);
-            dispatch();
+            store(ab(),  iAccumulator)
+            size(STA_AB)
+            dispatch()
         }
 
         handle(STA_ABX) {
-            store(abx(), iAccumulator);
-            size(STA_ABX);
-            dispatch();
+            store(abx(), iAccumulator)
+            size(STA_ABX)
+            dispatch()
         }
 
         handle(STA_ABY) {
-            store(aby(), iAccumulator);
-            size(STA_ABY);
-            dispatch();
+            store(aby(), iAccumulator)
+            size(STA_ABY)
+            dispatch()
         }
 
         handle(STA_IX) {
-            store(ix(),  iAccumulator);
-            size(STA_IX);
-            dispatch();
+            store(ix(),  iAccumulator)
+            size(STA_IX)
+            dispatch()
         }
 
         handle(STA_IY) {
-            store(iy(), iAccumulator);
-            size(STA_IY);
-            dispatch();
+            store(iy(), iAccumulator)
+            size(STA_IY)
+            dispatch()
         }
 
         // Load X
         handle(LDX_IM) {
             load(im(), iXIndex)
             updateNZ(iXIndex) 
-            size(LDX_IM);
-            dispatch();
+            size(LDX_IM)
+            dispatch()
         }
 
         handle(LDX_ZP) {
             load(zp(), iXIndex)
-            updateNZ(iXIndex);
-            size(LDX_ZP);
-            dispatch();
+            updateNZ(iXIndex)
+            size(LDX_ZP)
+            dispatch()
         }
 
         handle(LDX_ZPY) {
             load(zpy(), iXIndex)
             updateNZ(iXIndex)
-            size(LDX_ZPY);
-            dispatch();
+            size(LDX_ZPY)
+            dispatch()
         }
 
         handle(LDX_AB) {
-            load(ab(), iXIndex);
-            updateNZ(iXIndex);
-            size(LDX_AB);
-            dispatch();
+            load(ab(), iXIndex)
+            updateNZ(iXIndex)
+            size(LDX_AB)
+            dispatch()
         }
 
         handle(LDX_ABY) {
             load(aby(), iXIndex)
-            updateNZ(iXIndex);
-            size(LDX_ABY);
-            dispatch();
+            updateNZ(iXIndex)
+            size(LDX_ABY)
+            dispatch()
         }
 
         // Store X
         handle(STX_ZP) {
-            store(zp(),  iXIndex);
-            size(STX_ZP);
-            dispatch();
+            store(zp(),  iXIndex)
+            size(STX_ZP)
+            dispatch()
         }
 
         handle(STX_ZPY) {
-            store(zpy(), iXIndex);
-            size(STX_ZPY);
-            dispatch();
+            store(zpy(), iXIndex)
+            size(STX_ZPY)
+            dispatch()
         }
 
         handle(STX_AB) {
-            store(ab(),  iXIndex);
-            size(STX_AB);
-            dispatch();
+            store(ab(),  iXIndex)
+            size(STX_AB)
+            dispatch()
         }
 
         // Load Y
         handle(LDY_IM) {
             load(im(), iYIndex)
-            updateNZ(iYIndex);
-            size(LDY_IM);
-            dispatch();
+            updateNZ(iYIndex)
+            size(LDY_IM)
+            dispatch()
         }
 
         handle(LDY_ZP) {
             load(zp(), iYIndex)
-            updateNZ(iYIndex);
-            size(LDY_ZP);
-            dispatch();
+            updateNZ(iYIndex)
+            size(LDY_ZP)
+            dispatch()
         }
 
         handle(LDY_ZPX) {
             load(zpx(), iYIndex)
-            updateNZ(iYIndex);
-            size(LDY_ZPX);
-            dispatch();
+            updateNZ(iYIndex)
+            size(LDY_ZPX)
+            dispatch()
         }
 
         handle(LDY_AB) {
             load(ab(), iYIndex)
-            updateNZ(iYIndex);
-            size(LDY_AB);
-            dispatch();
+            updateNZ(iYIndex)
+            size(LDY_AB)
+            dispatch()
         }
 
         handle(LDY_ABX) {
             load(abx(), iYIndex)
-            updateNZ(iYIndex);
-            size(LDY_ABX);
-            dispatch();
+            updateNZ(iYIndex)
+            size(LDY_ABX)
+            dispatch()
         }
 
         // Store Y
         handle(STY_ZP) {
-            store(zp(),  iYIndex);
-            size(STY_ZP);
-            dispatch();
+            store(zp(),  iYIndex)
+            size(STY_ZP)
+            dispatch()
         }
 
         handle(STY_ZPX) {
-            store(zpx(), iYIndex);
-            size(STY_ZPX);
-            dispatch();
+            store(zpx(), iYIndex)
+            size(STY_ZPX)
+            dispatch()
         }
 
         handle(STY_AB) {
-            store(ab(),  iYIndex);
-            size(STY_AB);
-            dispatch();
+            store(ab(),  iYIndex)
+            size(STY_AB)
+            dispatch()
         }
 
-	    handle(NOP) {
-            size(NOP);
-            dispatch();
-	    }
 	    	    
+        // Compare
+        // A - M
+        handle(CMP_IM) {
+            load(im(), iData)
+            cmpByte(iAccumulator, iData)
+            size(CMP_IM)
+            dispatch()
+        }
+	    	    
+	    
+        handle(CMP_ZP) {
+            load(zp(), iData)
+            cmpByte(iAccumulator, iData)
+            size(CMP_ZP)
+            dispatch()
+        }
+
+        handle(CMP_ZPX) {
+            load(zpx(), iData)
+            cmpByte(iAccumulator, iData)
+            size(CMP_ZPX)
+            dispatch()
+        }
+
+        handle(CMP_AB) {
+            load(ab(), iData)
+            cmpByte(iAccumulator, iData)
+            size(CMP_AB)
+            dispatch()
+        }
+
+        handle(CMP_ABX) {
+            load(abx(), iData)
+            cmpByte(iAccumulator, iData)
+            size(CMP_ABX)
+            dispatch()
+        }
+
+        handle(CMP_ABY) {
+            load(aby(), iData)
+            cmpByte(iAccumulator, iData)
+            size(CMP_ABY)
+            dispatch()
+        }
+
+        handle(CMP_IX) {
+            load(ix(), iData)
+            cmpByte(iAccumulator, iData)
+            size(CMP_IX)
+            dispatch()
+        }
+
+        handle(CMP_IY) {
+            load(iy(), iData)
+            cmpByte(iAccumulator, iData)
+            size(CMP_IY)
+            dispatch()
+        }
+
+        handle(CPX_IM) {
+            load(im(), iData)
+            cmpByte(iXIndex, iData)
+            size(CPX_IM)
+            dispatch()
+        }
+
+        handle(CPX_ZP) {
+            load(zp(), iData)
+            cmpByte(iXIndex, iData)
+            size(CPX_ZP)
+            dispatch()
+        }
+
+        handle(CPX_AB) {
+            load(ab(), iData)
+            cmpByte(iXIndex, iData)
+            size(CPX_AB)
+            dispatch()
+        }
+
+        handle(CPY_IM) {
+            load(ab(), iData)
+            cmpByte(iYIndex, iData)
+            size(CPY_IM)
+            dispatch()
+        }
+
+        handle(CPY_ZP) {
+            load(zp(), iData)
+            cmpByte(iYIndex, iData)
+            size(CPY_ZP)
+            dispatch()
+        }
+
+        handle(CPY_AB) {
+            load(ab(), iData)
+            cmpByte(iYIndex, iData)
+            size(CPY_AB)
+            dispatch()
+        }	
+                
+	    handle(NOP) {
+            size(NOP)
+            dispatch()
+	    }
+
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
 	    case 0x23: fallthrough
