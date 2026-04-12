@@ -637,7 +637,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             dispatch()
         }
 
-        // Logic Ops...
+        // Bitwise AND
         handle(AND_IM) {
             load(im(), iData)
             iAccumulator &= iData
@@ -702,7 +702,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             dispatch()
         }
 
-
+        // Bitwise OR
         handle(ORA_IM) {
             load(im(), iData)
             iAccumulator |= iData
@@ -767,7 +767,72 @@ func (cpu *MOS6502) Run() *MOS6502 {
             dispatch()
         }
 
+        // Bitwise EOR
+        
+        handle(EOR_IM) {
+            load(im(), iData)
+            iAccumulator ^= iData
+            updateNZ(iAccumulator)
+            size(EOR_IM)
+            dispatch()
+        }
 
+        handle(EOR_ZP) {
+            load(zp(), iData)
+            iAccumulator ^= iData
+            updateNZ(iAccumulator)
+            size(EOR_ZP)
+            dispatch()
+        }
+
+        handle(EOR_ZPX) {
+            load(zpx(), iData)
+            iAccumulator ^= iData
+            updateNZ(iAccumulator)
+            size(EOR_ZPX)
+            dispatch()
+        }
+
+        handle(EOR_AB) {
+            load(ab(), iData)
+            iAccumulator ^= iData
+            updateNZ(iAccumulator)
+            size(EOR_AB)
+            dispatch()
+        }
+
+        handle(EOR_ABX) {
+            load(abx(), iData)
+            iAccumulator ^= iData
+            updateNZ(iAccumulator)
+            size(EOR_ABX)
+            dispatch()
+        }
+
+        handle(EOR_ABY) {
+            load(aby(), iData)
+            iAccumulator ^= iData
+            updateNZ(iAccumulator)
+            size(EOR_ABY)
+            dispatch()
+        }
+
+        handle(EOR_IX) {
+            load(ix(), iData)
+            iAccumulator ^= iData
+            updateNZ(iAccumulator)
+            size(EOR_IX)
+            dispatch()
+        }
+
+        handle(EOR_IY) {
+            load(iy(), iData)
+            iAccumulator ^= iData
+            updateNZ(iAccumulator)
+            size(EOR_IY)
+            dispatch()
+        }        
+        
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
 	    case 0x23: fallthrough
