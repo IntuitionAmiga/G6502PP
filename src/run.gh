@@ -337,6 +337,8 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(BCC) {
             if 0 == iStatus & F_CARRY {
                 branch()
+            } else {
+                size(SIZE_BRANCH)
             }
             dispatch()
         }
@@ -344,6 +346,8 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(BCS) {
             if F_CARRY == iStatus & F_CARRY {
                 branch()
+            } else {
+                size(SIZE_BRANCH)
             }
             dispatch()
         }
@@ -351,6 +355,8 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(BEQ) {
             if F_ZERO == iStatus & F_ZERO {
                 branch()
+            } else {
+                size(SIZE_BRANCH)
             }
             dispatch()
         }
@@ -358,6 +364,8 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(BNE) {
             if 0 == iStatus & F_ZERO {
                 branch()
+            } else {
+                size(SIZE_BRANCH)
             }
             dispatch()
         }
@@ -365,6 +373,8 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(BMI) {
             if F_NEGATIVE == iStatus & F_NEGATIVE {
                 branch()
+            } else {
+                size(SIZE_BRANCH)
             }
             dispatch()
         }
@@ -372,6 +382,8 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(BPL) {
             if 0 == iStatus & F_NEGATIVE {
                 branch()
+            } else {
+                size(SIZE_BRANCH)
             }
             dispatch()
         }
@@ -379,6 +391,8 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(BVC) {
             if 0 == iStatus & F_OVERFLOW {
                 branch()
+            } else {
+                size(SIZE_BRANCH)
             }
             dispatch()
         }
@@ -386,6 +400,8 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(BVS) {
             if F_OVERFLOW == iStatus & F_OVERFLOW {
                 branch()
+            } else {
+                size(SIZE_BRANCH)
             }
             dispatch()
         }
