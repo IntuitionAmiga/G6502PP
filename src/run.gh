@@ -353,7 +353,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
         }
 
         handle(CPY_IM) {
-            load(ab(), iData)
+            load(im(), iData)
             cmpByte(iYIndex, iData)
             size(CPY_IM)
             dispatch()
@@ -561,8 +561,9 @@ func (cpu *MOS6502) Run() *MOS6502 {
         
         handle(PLP) {
             pull(iData)
-            iData &= ^(F_BREAK | F_UNUSED)
-            iStatus = (iStatus & (F_BREAK | F_UNUSED)) | iData
+            //iData &= ^(F_BREAK | F_UNUSED)
+            //iStatus = (iStatus & (F_BREAK | F_UNUSED)) | iData
+            iStatus = iData & ^(F_BREAK | F_UNUSED)
             size(PLP)
             dispatch()
         }
@@ -1077,9 +1078,11 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(RTI) {
             // Pull SR but ignore bit 5
             pull(iData)            
-            iData &= ^(F_UNUSED|F_BREAK) // clear unused only
-            iStatus &= (F_UNUSED|F_BREAK) // clear all but unused flag
-            iStatus |= iData;
+            //iData &= ^(F_UNUSED|F_BREAK) // clear unused only
+            //iStatus &= (F_UNUSED|F_BREAK) // clear all but unused flag
+            //iStatus |= iData;
+            
+            iStatus = iData & ^(F_BREAK | F_UNUSED)
             // PC
             pull(iData)
             iAddress  = Address(iData)

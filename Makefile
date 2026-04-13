@@ -33,4 +33,4 @@ $(TARGET_GO): $(ENTRY_POINT)
 	@echo "Formatting intermediate file..."
 	$(GO) fmt $(TARGET_GO)
 clean:
-	rm -rf build bin
+	rm -rf build bin/$(BINARY_NAME)
