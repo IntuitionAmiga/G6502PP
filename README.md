@@ -34,7 +34,7 @@ For fun and to see if it would work.
 
 Wait, you're serious? You will need:
 
-**cpp** - Just install gcc for your system.
+**cpp** - Just install gcc for your system. That should make sure you also have `make` too.
 
 **Go** - I've only tested 1.26 and I have no idea if older version work or what incompatibilities there may be with any other version at all.
 
