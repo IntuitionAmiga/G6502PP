@@ -3,6 +3,46 @@
 #   include "macros.gh"
 
 /**
+ * Add byte, carry and accumulator using BCD semantics.
+ * Immediate result is allowed to overflow the normal byte range so that we can
+ * use bit 8 as the overflow.
+ */
+func addBCDWithCarry(iValue Byte, iAccumulator Byte, iStatus Byte) Word {
+    // Nybbles
+    iSumL := Word(iAccumulator & 0x0F) + Word(iValue & 0x0F) + Word(iStatus & F_CARRY)
+    iSumH := Word(iAccumulator & 0xF0) + Word(iValue & 0xF0)
+
+    if iSumL > 0x09 {
+        iSumH += 0x10
+        iSumL += 0x06
+    }
+    if iSumH > 0x90 {
+        iSumH += 0x60
+    }
+    return (iSumH & 0x1F0) | (iSumL & 0x0F)
+}
+
+/**
+ * Subtract byte and carry from the accumulator, using BCD semantics
+ * Immediate result is allowed to underflow the normal byte range so that we can
+ * use bit 8 as the underflow.
+ */
+func subBCDWithCarry(iValue Byte, iAccumulator Byte, iStatus Byte) Word {
+    // Nybbles
+    iDiffL := Word(iAccumulator & 0x0F) - Word(iValue & 0x0F) - Word((^iStatus) & F_CARRY)
+    iDiffH := Word(iAccumulator & 0xF0) - Word(iValue & 0xF0)
+
+    if 0 != iDiffL & 0x10 {
+        iDiffL -= 0x06
+        iDiffH--
+    }
+    if 0 != iDiffH & 0x0100 {
+        iDiffH -= 0x60
+    }
+    return (iDiffH & 0x1F0) | (iDiffL & 0x0F)
+}
+
+/**
  * You are ruining my beautiful language!
  */
 func (cpu *MOS6502) Run() *MOS6502 {

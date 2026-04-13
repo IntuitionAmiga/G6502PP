@@ -145,5 +145,41 @@
     rotateRightWithCarry(iData); \
     writeByte(iAddress, iData); \
 }
+
+#define addByteWithCarry(iValue) { \
+    var iSum Word; \
+    if (iStatus & F_DECIMAL) != 0 { \
+        iSum = addBCDWithCarry(iValue, iAccumulator, iStatus); \
+    } else { \
+        iSum = Word(iStatus & F_CARRY) + Word(iValue) + Word(iAccumulator); \
+    } \
+    iRes := Byte(iSum); \
+    iStatus &= F_CLR_NZCV; \
+    if iRes == 0 { iStatus |= F_ZERO } else { iStatus |= (iRes & F_NEGATIVE) }; \
+    if (iSum & 0x100) != 0 { iStatus |= F_CARRY }; \
+    if ((iValue & F_NEGATIVE) == (iAccumulator & F_NEGATIVE)) && \
+       ((iValue & F_NEGATIVE) != (iRes & F_NEGATIVE)) { \
+        iStatus |= F_OVERFLOW; \
+    } \
+    iAccumulator = iRes; \
+}
+
+#define subByteWithCarry(iValue) { \
+    var iDiff Word; \
+    if (iStatus & F_DECIMAL) != 0 { \
+        iDiff = subBCDWithCarry(iValue, iAccumulator, iStatus); \
+    } else { \
+        iDiff = Word(iAccumulator) - Word(iValue) - Word((^iStatus) & F_CARRY); \
+    } \
+    iRes := Byte(iDiff); \
+    iStatus &= F_CLR_NZCV; \
+    if iRes == 0 { iStatus |= F_ZERO } else { iStatus |= (iRes & F_NEGATIVE) }; \
+    if (iDiff & 0x100) == 0 { iStatus |= F_CARRY }; \
+    if ((iValue & F_NEGATIVE) != (iAccumulator & F_NEGATIVE)) && \
+       ((iAccumulator & F_NEGATIVE) != (iRes & F_NEGATIVE)) { \
+        iStatus |= F_OVERFLOW; \
+    } \
+    iAccumulator = iRes; \
+}
     
 #endif
