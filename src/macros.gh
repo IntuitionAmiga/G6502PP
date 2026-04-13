@@ -88,4 +88,62 @@
     if iTo >= iValue { iStatus |= F_CARRY }; \
 }
 
+#define shiftLeftWithCarry(iValue) { \
+    iStatus &= ^F_CARRY; \
+    iStatus |= (iValue & F_NEGATIVE) >> 7; \
+    iValue <<= 1; \
+    updateNZ(iValue); \
+}
+
+#define shiftRightWithCarry(iValue) { \
+    iStatus &= ^F_CARRY; \
+    iStatus |= (iValue & F_CARRY); \
+    iValue >>= 1; \
+    updateNZ(iValue); \
+}
+
+#define lsrMemory(mode) { \
+    mode; \
+    iData = readByte(iAddress); \
+    shiftRightWithCarry(iData); \
+    writeByte(iAddress, iData); \
+}
+
+#define aslMemory(mode) { \
+    mode; \
+    iData = readByte(iAddress); \
+    shiftLeftWithCarry(iData); \
+    writeByte(iAddress, iData); \
+}
+
+#define rotateLeftWithCarry(iValue) { \
+    iCarry := iStatus & F_CARRY; \
+    iStatus &= ^F_CARRY; \
+    iStatus |= ((iValue & F_NEGATIVE) >> 7); \
+    iValue = ((iValue << 1) | iCarry); \
+    updateNZ(iValue); \
+}
+
+#define rotateRightWithCarry(iValue) { \
+    iCarry := ((iStatus & F_CARRY) << 7); \
+    iStatus &= ^F_CARRY; \
+    iStatus |= (iValue & F_CARRY); \
+    iValue = ( (iValue >> 1) | iCarry ); \
+    updateNZ(iValue); \
+}
+
+#define rolMemory(mode) { \
+    mode; \
+    iData = readByte(iAddress); \
+    rotateLeftWithCarry(iData); \
+    writeByte(iAddress, iData); \
+}
+
+#define rorMemory(mode) { \
+    mode; \
+    iData = readByte(iAddress); \
+    rotateRightWithCarry(iData); \
+    writeByte(iAddress, iData); \
+}
+    
 #endif

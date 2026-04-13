@@ -834,7 +834,6 @@ func (cpu *MOS6502) Run() *MOS6502 {
         }        
         
         // Unconditional
-
         handle(JMP_AB) {
             iAddress = readWord(iProgramCounter + 1)
             if iAddress == iProgramCounter {
@@ -852,12 +851,222 @@ func (cpu *MOS6502) Run() *MOS6502 {
                 iProgramCounter  = Address(readByte(iAddress))
                 iProgramCounter |= (Address(readByte(iAddress & 0xFF00)) << 8)
             } else {
-                iProgramCounter = readWord(iAddress);
+                iProgramCounter = readWord(iAddress)
             }
-            dispatch();
+            dispatch()
+        }
+
+        handle(JSR_AB) {
+            // Note the 6502 notion of the return address is actually the address of the last byte of the operation.
+            iAddress = iProgramCounter + 2
+            push(Byte(iAddress >> 8))
+            push(Byte(iAddress & 0xFF))
+            iProgramCounter = readWord(iProgramCounter + 1)
+            dispatch()
+        }
+
+        handle(RTS) {
+            pull(iData)
+            iAddress  = Address(iData);
+            pull(iData)
+            iAddress |= (Address(iData) << 8)
+            iProgramCounter = iAddress + 1
+            dispatch()
+        }
+
+        // Logical shift right
+        handle(LSR_A) {
+            iStatus &= ^F_CARRY
+            iStatus |= (iAccumulator & F_CARRY)
+            iAccumulator >>= 1
+            updateNZ(iAccumulator)
+            size(LSR_A)
+            dispatch()
         }
 
 
+        handle(LSR_ZP) {
+            lsrMemory(zp())
+            size(LSR_ZP)
+            dispatch()
+        }
+
+        handle(LSR_ZPX) {
+            lsrMemory(zpx())
+            size(LSR_ZPX)
+            dispatch()
+        }
+
+        handle(LSR_AB) {
+            lsrMemory(ab())
+            size(LSR_AB)
+            dispatch()
+        }
+
+        handle(LSR_ABX) {
+            lsrMemory(abx())
+            size(LSR_ABX)
+            dispatch()
+        }
+
+        // Arithmetuc shift left
+        handle(ASL_A) {
+            iStatus &= ^F_CARRY
+            iStatus |= ((iAccumulator & F_NEGATIVE) >> 7) // sign -> carry
+            iAccumulator <<= 1
+            updateNZ(iAccumulator)
+            size(ASL_A)
+            dispatch()
+        }
+
+        handle(ASL_ZP) {
+            aslMemory(zp())
+            size(ASL_ZP)
+            dispatch()
+        }
+
+        handle(ASL_ZPX) {
+            aslMemory(zpx())
+            size(ASL_ZPX)
+            dispatch()
+        }
+
+        handle(ASL_AB) {
+            aslMemory(ab())
+            size(ASL_AB)
+            dispatch()
+        }
+
+        handle(ASL_ABX) {
+            aslMemory(abx())
+            size(ASL_ABX)
+            dispatch()
+        }
+
+        handle(ROL_A) {
+            iData = (iStatus & F_CARRY)
+            iStatus &= ^F_CARRY
+            iStatus |= ((iAccumulator & F_NEGATIVE) >> 7)
+            iAccumulator = ((iAccumulator << 1) | iData)
+            updateNZ(iAccumulator)
+            size(ROL_A)
+            dispatch()
+        }
+
+        handle(ROL_ZP) {
+            rolMemory(zp())
+            size(ROL_ZP)
+            dispatch()
+        }
+
+        handle(ROL_ZPX) {
+            rolMemory(zpx())
+            size(ROL_ZPX)
+            dispatch()
+        }
+
+        handle(ROL_AB) {
+            rolMemory(ab())
+            size(ROL_AB)
+            dispatch()
+        }
+
+        handle(ROL_ABX) {
+            rolMemory(abx())
+            size(ROL_ABX)
+            dispatch()
+        }
+
+        handle(ROR_A) {
+            iData = ((iStatus & F_CARRY) << 7)
+            iStatus &= ^F_CARRY;
+            iStatus |= (iAccumulator & F_CARRY)
+            iAccumulator = ((iAccumulator >> 1) | iData)
+            updateNZ(iAccumulator)
+            size(ROR_A)
+            dispatch()
+        }
+
+        handle(ROR_ZP) {
+            rorMemory(zp())
+            size(ROR_ZP)
+            dispatch()
+        }
+
+        handle(ROR_ZPX) {
+            rorMemory(zpx())
+            size(ROR_ZPX)
+            dispatch()
+        }
+
+        handle(ROR_AB) {
+            rorMemory(ab())
+            size(ROR_AB)
+            dispatch()
+        }
+
+        handle(ROR_ABX) {
+            rorMemory(abx())
+            size(ROR_ABX)
+            dispatch()
+        }
+
+        handle(BIT_ZP) {
+            load(zp(), iData)
+            iStatus &= F_CLR_NZV
+            iStatus |= (iData & (F_NEGATIVE | F_OVERFLOW))
+            if 0 == iData & iAccumulator {
+                iStatus |= F_ZERO
+            }            
+            size(BIT_ZP)
+            dispatch()
+        }
+
+        handle(BIT_AB) {
+            load(ab(), iData)
+            iStatus &= F_CLR_NZV
+            iStatus |= (iData & (F_NEGATIVE|F_OVERFLOW))
+            if 0 == iData & iAccumulator {
+                iStatus |= F_ZERO
+            }
+            size(BIT_AB)
+            dispatch()
+        }
+
+
+        handle(RTI) {
+            // Pull SR but ignore bit 5
+            pull(iData)            
+            iData &= ^(F_UNUSED|F_BREAK) // clear unused only
+            iStatus &= (F_UNUSED|F_BREAK) // clear all but unused flag
+            iStatus |= iData;
+            // PC
+            pull(iData)
+            iAddress  = Address(iData)
+            pull(iData)
+            iAddress |= (Address(iData) << 8)
+            iProgramCounter = iAddress
+            dispatch()
+        }
+
+        handle(BRK) {
+            // Push PC+2 as return address
+            //iValAddress    = iProgramCounter + 1;
+            iAddress = iProgramCounter + 2
+            push(Byte(iAddress >> 8))
+            push(Byte(iAddress & 0xFF))
+            
+            // Push SR
+            iData = iStatus|F_BREAK|F_UNUSED
+            push(iData);
+
+            // Reload PC from IRQ vector
+            iProgramCounter = readWord(VEC_IRQ);
+
+            // Set interrupted status. Is this the correct location?
+            iStatus |= F_INTERRUPT
+            dispatch()
+        }
         
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
